@@ -1,0 +1,56 @@
+/**
+ * @license
+ * Copyright 2019 Google LLC. All Rights Reserved.
+ * SPDX-License-Identifier: Apache-2.0
+ */
+/* 
+ * Always set the map height explicitly to define the size of the div element
+ * that contains the map. 
+ */
+ #map {
+    height: 100%;
+}
+
+/* 
+* Optional: Makes the sample page fill the window. 
+*/
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.custom-ctrl-box {
+    background-color: rgb(255, 255, 255);
+    border: 2px solid rgb(255, 255, 255);
+    border-radius: 3px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 2px 6px;
+    cursor: pointer;
+    margin-top: 8px;
+    margin-bottom: 22px;
+    text-align: center;
+}
+
+.custom-ctrl-text {
+    color: rgb(25, 25, 25);
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 38px;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.get-directions-btn {
+    background-color: #ea4335;
+    border: none;
+    color: white;
+    width: 90%;
+    margin: 10px 5% 0 5%;
+    padding: 7.5px 7.5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 13px;
+    cursor: pointer;
+}
