@@ -84,7 +84,7 @@ function createMarker(place) {
     const restoMarker = new google.maps.Marker({
         map,
         position: place.geometry.location,
-        icon: '/imgs/sugbu-resto-marker-v1.png',
+        icon: 'imgs/sugbu-resto-marker-v1.png',
         animation: google.maps.Animation.DROP,
         specialty: foodSpecialtyList[Math.floor(Math.random() * foodSpecialtyList.length)],
     });
