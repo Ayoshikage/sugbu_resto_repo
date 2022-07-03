@@ -1,2 +1,2 @@
-# sugbu_resto_repo
-Sugbu Resto project repository
+# sugbu_restos_repo
+Sugbu Restos project repository
