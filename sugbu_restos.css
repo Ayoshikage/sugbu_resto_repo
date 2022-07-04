@@ -54,3 +54,25 @@ body {
     font-size: 13px;
     cursor: pointer;
 }
+
+.div-resto-visibility-custom-ctrl {
+    top: 0 !important;
+}
+
+#divAllRestoBox,
+#divOpenRestoBox,
+#divClosedRestoBox {
+    display: inline-block;
+    width: 90px;
+    top: 0;
+    box-shadow: none;
+    border: none;
+}
+
+.selected-resto-visibility-ctrl-btn {
+    background-color: black;
+}
+
+.selected-resto-visibility-ctrl-btn .custom-ctrl-text {
+    color: white;
+}

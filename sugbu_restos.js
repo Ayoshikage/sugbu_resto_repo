@@ -20,6 +20,22 @@ let restoZoneCircles = [];
 const divSugbuRestoCustomCtrl = $('<div>');
 const divCustomCtrlBox = $('<div>', {class: 'custom-ctrl-box'});
 const divCustomCtrlText = $('<div>', {class: 'custom-ctrl-text'});
+const divRestoVisibilityCustomCtrl = $('<div>');
+const divAllRestoBox = $('<div>', {
+    id: 'divAllRestoBox',
+    class: 'custom-ctrl-box',
+});
+const divAllRestoText = $('<div>', {class: 'custom-ctrl-text'});
+const divOpenRestoBox = $('<div>', {
+    id: 'divOpenRestoBox',
+    class: 'custom-ctrl-box',
+});
+const divOpenRestoText = $('<div>', {class: 'custom-ctrl-text'});
+const divClosedRestoBox = $('<div>', {
+    id: 'divClosedRestoBox',
+    class: 'custom-ctrl-box',
+});
+const divClosedRestoText = $('<div>', {class: 'custom-ctrl-text'});
 
 const foodSpecialtyList = ["Adobo", "Bulalo", "Caesar Salad", "Doughnut", "Escabeche",
     "Fillet Mignon", "Granola", "Hotdog", "Ice Cream", "Jumbo Hotdog",
@@ -33,7 +49,8 @@ function initMap() {
     sugbuMercadoCoordinates = new google.maps.LatLng(10.3321805864036, 123.90576817157448);
     map = new google.maps.Map($('#map')[0], {
         center: sugbuMercadoCoordinates,
-        zoom: 15
+        zoom: 14,
+        fullscreenControl: false,
     });
     placesService = new google.maps.places.PlacesService(map);
     restoInfoWindow = new google.maps.InfoWindow();
@@ -64,6 +81,7 @@ function createRestoSearchBtn() {
                     setTimeout(() => createMarker(results[i]), i * 50);
                 }
                 map.setCenter(sugbuMercadoCoordinates);
+                createRestoMarkupVisibilityToggleBtns();
             }
         }
         
@@ -77,20 +95,21 @@ function createRestoSearchBtn() {
     map.controls[google.maps.ControlPosition.TOP_CENTER].push(divSugbuRestoCustomCtrl[0]);
 }
 
-function createMarker(place) {
+function createMarker(resto) {
 
-    if (!place.geometry || !place.geometry.location) return;
+    if (!resto.geometry || !resto.geometry.location) return;
 
     const restoMarker = new google.maps.Marker({
         map,
-        position: place.geometry.location,
-        icon: 'imgs/sugbu-resto-marker-v1.png',
+        position: resto.geometry.location,
+        icon: (resto.business_status === 'OPERATIONAL') ? 'imgs/sugbu-resto-marker-v1.png' : 'imgs/sugbu-resto-marker-closed-v1.png',
         animation: google.maps.Animation.DROP,
         specialty: foodSpecialtyList[Math.floor(Math.random() * foodSpecialtyList.length)],
+        business_status: resto.business_status,
     });
 
     restoMarkers.push({
-        placeId: place.place_id,
+        placeId: resto.place_id,
         restoMarker: restoMarker,
     });
 
@@ -98,10 +117,10 @@ function createMarker(place) {
 
         restoMarker.setAnimation(google.maps.Animation.BOUNCE);
 
-        let contentString = `<div style='font-weight: bold;'>${place.name}</div>`
-            + `<div>Specialty: ${restoMarker.specialty}</div>`
-            + `<div title='Based on Customer Reviews statistic'># of Customer Visits: ${place.user_ratings_total}</div>`
-            + `<button id='${place.place_id}' class='get-directions-btn'>Get Directions</button>`;
+        let contentString = `<div style='font-weight: bold;'>${resto.name}</div>`
+        + `<div>Specialty: ${restoMarker.specialty}</div>`
+        + `<div title='Based on Customer Reviews statistic'># of Customer Visits: ${resto.user_ratings_total}</div>`
+        + `<button id='${resto.place_id}' class='get-directions-btn'>Get Directions</button>`;
 
         restoInfoWindow.setContent(contentString);
         restoInfoWindow.setZIndex(10);
@@ -112,7 +131,7 @@ function createMarker(place) {
         });
 
         google.maps.event.addListener(restoInfoWindow, 'domready', () => {
-            $(`button[id='${place.place_id}']`).on('click', giveDirections);
+            $(`button[id='${resto.place_id}']`).on('click', giveDirections);
         });
 
         restoMarker.setAnimation(null);
@@ -154,7 +173,8 @@ function createDrawingControl() {
             circle.addListener(eventName, () => {
                 restoCountWithinCircle = 0;
                 for (let i = 0; i < restoMarkers.length; i++) {
-                    if (google.maps.geometry.spherical.computeDistanceBetween(restoMarkers[i].restoMarker.getPosition(), circle.getCenter()) <= circle.getRadius()) {
+                    if (google.maps.geometry.spherical.computeDistanceBetween(restoMarkers[i].restoMarker.getPosition(), circle.getCenter()) <= circle.getRadius()
+                        && restoMarkers[i].restoMarker.getVisible()) {
                         restoCountWithinCircle++;
                     }
                 }
@@ -184,6 +204,57 @@ function createDrawingControl() {
         restoZoneCircles.forEach((circle) => circle.setMap(null));
         restoZoneCircles = [];
     });
+}
+
+function createRestoMarkupVisibilityToggleBtns() {
+
+    divAllRestoText.html('All Restos');
+    divOpenRestoText.html('Operational');
+    divClosedRestoText.html('Closed');
+
+    divAllRestoBox.append(divAllRestoText);
+    divOpenRestoBox.append(divOpenRestoText);
+    divClosedRestoBox.append(divClosedRestoText);
+
+    divAllRestoBox.on('click', () => filterRestoVisibility('ALL'));
+    divOpenRestoBox.on('click', () => filterRestoVisibility('OPERATIONAL'));
+    divClosedRestoBox.on('click', () => filterRestoVisibility('CLOSED'));
+
+    divRestoVisibilityCustomCtrl.append(divAllRestoBox, divOpenRestoBox, divClosedRestoBox);
+    divRestoVisibilityCustomCtrl.addClass('div-resto-visibility-custom-ctrl');
+
+    map.controls[google.maps.ControlPosition.RIGHT_TOP].push(divRestoVisibilityCustomCtrl[0]);
+
+    divAllRestoBox.click();
+}
+
+function filterRestoVisibility(mode) {
+
+    $('.selected-resto-visibility-ctrl-btn').removeClass('selected-resto-visibility-ctrl-btn');
+
+    let restoMarkersToShow = 'OPERATIONAL, CLOSED_TEMPORARILY';
+
+    switch(mode) {
+        case 'ALL':
+            $('#divAllRestoBox').addClass('selected-resto-visibility-ctrl-btn');
+            restoMarkersToShow = 'OPERATIONAL, CLOSED_TEMPORARILY';
+            break;
+        case 'OPERATIONAL':
+            $('#divOpenRestoBox').addClass('selected-resto-visibility-ctrl-btn');
+            restoMarkersToShow = 'OPERATIONAL'
+            break;
+        case 'CLOSED':
+            $('#divClosedRestoBox').addClass('selected-resto-visibility-ctrl-btn');
+            restoMarkersToShow = 'CLOSED_TEMPORARILY'
+            break;
+        default:
+            break;
+    }
+
+    restoMarkers.forEach((restoMarkerInstance) => {
+        restoMarkerInstance.restoMarker.setVisible(restoMarkersToShow.includes(restoMarkerInstance.restoMarker.business_status));
+    });
+    
 }
 
 function giveDirections(evt) {
