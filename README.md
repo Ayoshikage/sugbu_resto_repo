@@ -7,8 +7,10 @@ The following are the implemented features of the Sugbu Resto web app using Goog
 		- DrawingManager buttons: cursor and circle options (please see item ❻ for more details about the circle option)
 		- [Clear Circle] button, which clears all the circles drawn in the map
 		- Restaurant Type toggle buttons: [All Restos], [Operational], and [Closed] (for more details, please see item ❸)
+
 ☑︎ ❷ Each restaurant will have at least 1 food specialty.
 - Each restaurant is assigned a food specialty that is randomly selected from the <foodSpecialtyList> array. A resto's food specialty can be viewed in its Info Window, displayed after clicking its marker in the map.
+
 ☑︎ ❸ A layer panel can filter the restaurant type to show.
 - For the Sugbu Resto web app, two types of restaurants can be displayed:
 	- [OPERATIONAL] Operational restaurants
@@ -17,12 +19,15 @@ The following are the implemented features of the Sugbu Resto web app using Goog
 	- [All Restos]: shows all custom markers, representing Cebu restos
 	- [Operational]: shows all red custom markers, representing operational Cebu restos
 	- [Closed]: shows all black custom markers, representing closed Cebu restos
+
 ☑︎ ❹ Each restaurant can keep track of the number of customers that visited.
 - The # of customers that visited a particular resto can be viewed in the Info Window, which is displayed after clicking the resto's marker.
 - Figure is based on the <user_ratings_total> data retrieved from <nearbySearch>/<textSearch> results.
+
 ☑︎ ❺ Customers can get directions to the restaurant from the current location.
 - When a user clicks a resto marker in the map and the Info Window is subsequently displayed, a [Get Direction] button is also shown in the said window.
 - Pressing [Get Direction] will plot a course from the user's current location to the said resto.
+
 ☑︎ ❻ Draw a circle or rectangle on the map and show the number of restaurants within the circle or rectangle.
 - After pressing the [Show Sugbu Restos] button, cursor and circle option buttons are displayed (at the left of the [Clear Circles] button).
 	- Pressing the circle option allows the user to create multiple circles in the map.
